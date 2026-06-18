@@ -766,10 +766,12 @@
           body: JSON.stringify({ email, password }),
         });
 
-        const data = await res.json();
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch { data = {}; }
 
         if (!res.ok) {
-          throw new Error(data.detail || data.message || 'Invalid email or password.');
+          throw new Error(data.detail || data.message || text || 'Invalid email or password.');
         }
 
         // Store credentials
@@ -815,10 +817,12 @@
           body: JSON.stringify({ email, password, age, cycle_length, work_type, exercise_pref }),
         });
 
-        const data = await res.json();
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch { data = {}; }
 
         if (!res.ok) {
-          throw new Error(data.detail || data.message || 'Registration failed. Please try again.');
+          throw new Error(data.detail || data.message || text || 'Registration failed. Please try again.');
         }
 
         // Store credentials
