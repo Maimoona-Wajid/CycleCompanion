@@ -335,38 +335,44 @@ def predict_cycle_phase(last_date_str: str, cycle_length: int, symptoms_list: Li
     last_date = datetime.strptime(last_date_str, "%Y-%m-%d")
     today = datetime.now()
     days_passed = (today - last_date).days
-    current_day = (days_passed % cycle_length) + 1
+    
+    # Track actual day count (does NOT reset — continues counting if period is late)
+    current_day = days_passed + 1
+    days_late = max(0, days_passed - cycle_length)
+    is_late = days_late > 0
+    
+    # For ML features, use the cyclic position within expected cycle
+    cycle_position = (days_passed % cycle_length) + 1
     
     # Advanced cyclical time-series coordinate calculation
-    sin_cycle_day = np.sin(2 * np.pi * current_day / 28)
-    cos_cycle_day = np.cos(2 * np.pi * current_day / 28)
+    sin_cycle_day = np.sin(2 * np.pi * cycle_position / 28)
+    cos_cycle_day = np.cos(2 * np.pi * cycle_position / 28)
     
     # Establish baseline physiological variables corresponding to cycle day
-    if 1 <= current_day <= 5:
+    if 1 <= cycle_position <= 5:
         estrogen = 35.0
         lh = 5.0
         sleep_dur = 420.0
         sleep_eff = 88.0
-    elif 6 <= current_day <= 13:
-        estrogen = 100.0
-        lh = 10.0
-        sleep_dur = 480.0
-        sleep_eff = 92.0
-    elif 14 <= current_day <= 16:
-        estrogen = 275.0
-        lh = 50.0
+    elif 6 <= cycle_position <= 13:
+        estrogen = 80.0
+        lh = 8.0
         sleep_dur = 450.0
-        sleep_eff = 90.0
-    else:
-        estrogen = 175.0
-        lh = 7.0
-        sleep_dur = 390.0
+        sleep_eff = 92.0
+    elif 14 <= cycle_position <= 16:
+        estrogen = 90.0
+        lh = 45.0
+        sleep_dur = 420.0
         sleep_eff = 85.0
-
-    # Default exercise columns for prediction features matrix
-    exercise_duration_min = 0.0
-    exercise_calories = 0.0
-    exercise_steps = 0.0
+    else:
+        estrogen = 60.0
+        lh = 4.0
+        sleep_dur = 390.0
+        sleep_eff = 80.0
+    
+    exercise_duration_min = 30.0
+    exercise_calories = 150.0
+    exercise_steps = 3000.0
     exercise_avg_hr = 0.0
 
     # Check if we have models loaded in cache
@@ -387,7 +393,7 @@ def predict_cycle_phase(last_date_str: str, cycle_length: int, symptoms_list: Li
             ]
             
             features_df = pd.DataFrame([[
-                estrogen, lh, current_day, sin_cycle_day, cos_cycle_day,
+                estrogen, lh, cycle_position, sin_cycle_day, cos_cycle_day,
                 sleep_dur, sleep_eff,
                 exercise_duration_min, exercise_calories, exercise_steps, exercise_avg_hr
             ]], columns=feature_names)
@@ -416,35 +422,48 @@ def predict_cycle_phase(last_date_str: str, cycle_length: int, symptoms_list: Li
         except Exception as e:
             # Graceful fallback logic
             print(f"[ERROR] Lifespan inference failure for Model 1: {str(e)}")
-            predicted_phase, confidence, phase_prob = _fallback_rules(current_day)
+            predicted_phase, confidence, phase_prob = _fallback_rules(cycle_position)
     else:
         # Fallback to smart heuristic logic if models are not loaded
-        predicted_phase, confidence, phase_prob = _fallback_rules(current_day)
+        predicted_phase, confidence, phase_prob = _fallback_rules(cycle_position)
+
+    # If period is late, override phase to indicate lateness
+    if is_late:
+        predicted_phase = "Late Period"
 
     # Biological rationale text summaries
     prod_tips = {
         "Menstrual Phase": "Low physical/mental battery. Prioritize administrative tasks, reading, planning, and organizing. Delegate active presentations if possible.",
         "Follicular Phase": "Hormones rising. Creativity, neural processing, and brainstorming are at maximum speed. Perfect time to launch new complex projects.",
         "Ovulatory Phase": "High estrogen & testosterone. Communication, confidence, and social charisma peak. Excellent for client presentations, negotiations, and networking.",
-        "Luteal Phase": "Progesterone high. Detail-oriented cognitive focus. Best time to review documentation, debug, proofread, and complete deep analytical tasks."
+        "Luteal Phase": "Progesterone high. Detail-oriented cognitive focus. Best time to review documentation, debug, proofread, and complete deep analytical tasks.",
+        "Late Period": "Your period is late. This is normal — cycles vary. Continue with light-to-moderate tasks and log your new period start date when it begins."
     }
     
     exe_tips = {
         "Menstrual Phase": "Gentle yoga, stretching, and brisk outdoor walks to increase blood flow and ease uterine cramping without increasing cortisol.",
         "Follicular Phase": "Strength training and steady-state cardio. Your muscles recover faster and build strength efficiently during this phase.",
         "Ovulatory Phase": "HIIT (High Intensity Interval Training), intense cardio, and heavy lifting. You have peak performance limits today.",
-        "Luteal Phase": "Moderate Pilates, active recovery yoga, and steady jogging. Focus on endurance and flexibility as energy starts dropping."
+        "Luteal Phase": "Moderate Pilates, active recovery yoga, and steady jogging. Focus on endurance and flexibility as energy starts dropping.",
+        "Late Period": "Stick to moderate exercise — walking, yoga, or light cardio. Avoid overexertion until your cycle resets."
     }
 
-    next_period = (last_date + timedelta(days=cycle_length)).strftime("%Y-%m-%d")
+    next_period = last_date + timedelta(days=cycle_length)
+    if is_late:
+        next_period_str = f"LATE by {days_late} day{'s' if days_late != 1 else ''} — log new period start to recalibrate"
+    else:
+        next_period_str = next_period.strftime("%Y-%m-%d")
     
     return {
         "current_day": current_day,
+        "cycle_length": cycle_length,
+        "days_late": days_late,
+        "is_late": is_late,
         "phase": predicted_phase,
         "confidence": round(confidence * 100, 1),
         "productivity_tip": prod_tips.get(predicted_phase, prod_tips["Follicular Phase"]),
         "exercise_tip": exe_tips.get(predicted_phase, exe_tips["Follicular Phase"]),
-        "next_period_prediction": next_period,
+        "next_period_prediction": next_period_str,
         "phase_distribution": phase_prob
     }
 

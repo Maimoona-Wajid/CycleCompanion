@@ -117,11 +117,11 @@
       animation: fadeSlideDown 0.8s ease-out;
     }
     .logo-icon {
-      font-size: 48px;
       display: block;
       margin-bottom: 8px;
       filter: drop-shadow(0 4px 12px rgba(184, 169, 201, 0.3));
       animation: gentlePulse 3s ease-in-out infinite;
+      color: var(--primary-dark);
     }
     .logo-text {
       font-size: 28px;
@@ -335,11 +335,12 @@
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 18px;
       color: var(--text-muted);
       padding: 4px;
       transition: color 0.2s;
       line-height: 1;
+      display: flex;
+      align-items: center;
     }
     .toggle-password:hover {
       color: var(--primary-dark);
@@ -543,7 +544,7 @@
 
     <!-- Logo -->
     <div class="logo">
-      <span class="logo-icon" aria-hidden="true">🌸</span>
+      <span class="logo-icon" aria-hidden="true"><svg width='44' height='44' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><circle cx='12' cy='12' r='3'/><path d='M12 2a4 4 0 0 1 0 8 4 4 0 0 1 0-8zM12 14a4 4 0 0 1 0 8 4 4 0 0 1 0-8zM2 12a4 4 0 0 1 8 0 4 4 0 0 1-8 0zM14 12a4 4 0 0 1 8 0 4 4 0 0 1-8 0z'/></svg></span>
       <div class="logo-text">CycleCompanion</div>
       <div class="logo-tagline">Your intelligent wellness companion</div>
     </div>
@@ -571,7 +572,7 @@
             <div class="password-wrapper">
               <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required autocomplete="current-password" minlength="6">
               <button type="button" class="toggle-password" onclick="togglePasswordVisibility('loginPassword', this)" aria-label="Toggle password visibility">
-                <span class="eye-icon">👁</span>
+                <span class="eye-icon"><svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/><circle cx='12' cy='12' r='3'/></svg></span>
               </button>
             </div>
           </div>
@@ -580,7 +581,7 @@
             <span class="spinner"></span>
           </button>
           <div class="alert alert-error" id="loginAlert">
-            <span class="alert-icon">⚠</span>
+            <span class="alert-icon"><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg></span>
             <span class="alert-msg" id="loginAlertMsg"></span>
           </div>
           <p class="switch-text">
@@ -599,7 +600,7 @@
             <div class="password-wrapper">
               <input type="password" id="regPassword" name="password" placeholder="Create a password (min 6 chars)" required autocomplete="new-password" minlength="6">
               <button type="button" class="toggle-password" onclick="togglePasswordVisibility('regPassword', this)" aria-label="Toggle password visibility">
-                <span class="eye-icon">👁</span>
+                <span class="eye-icon"><svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/><circle cx='12' cy='12' r='3'/></svg></span>
               </button>
             </div>
           </div>
@@ -649,7 +650,7 @@
             <span class="spinner"></span>
           </button>
           <div class="alert alert-error" id="registerAlert">
-            <span class="alert-icon">⚠</span>
+            <span class="alert-icon"><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg></span>
             <span class="alert-msg" id="registerAlertMsg"></span>
           </div>
           <p class="switch-text">
@@ -659,7 +660,7 @@
       </div>
     </div>
 
-    <p class="footer-note">Empowering your wellness, one cycle at a time ✨</p>
+    <p class="footer-note">Empowering your wellness, one cycle at a time</p>
   </div>
 
   <script>
@@ -710,10 +711,10 @@
       const icon  = btn.querySelector('.eye-icon');
       if (input.type === 'password') {
         input.type = 'text';
-        icon.textContent = '🙈';
+        icon.innerHTML = "<svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94'/><path d='M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19'/><line x1='1' y1='1' x2='23' y2='23'/></svg>";
       } else {
         input.type = 'password';
-        icon.textContent = '👁';
+        icon.innerHTML = "<svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/><circle cx='12' cy='12' r='3'/></svg>";
       }
     }
 
@@ -723,7 +724,7 @@
       const msg = el.querySelector('.alert-msg');
       const icon = el.querySelector('.alert-icon');
       el.className = `alert alert-${type} show`;
-      icon.textContent = type === 'error' ? '⚠' : '✓';
+      icon.innerHTML = type === 'error' ? "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg>" : "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5'><polyline points='20 6 9 17 4 12'/></svg>";
       msg.textContent = message;
     }
 
@@ -776,7 +777,10 @@
 
         // Store credentials
         localStorage.setItem('authToken', data.access_token);
-        localStorage.setItem('userEmail', data.user?.email || email);
+        const userEmail = data.user?.email || email;
+        localStorage.setItem('userEmail', userEmail);
+        const namePart = userEmail.split('@')[0].replace(/[._-]/g, ' ');
+        localStorage.setItem('userName', namePart.charAt(0).toUpperCase() + namePart.slice(1));
 
         // Redirect
         window.location.href = '/dashboard';
@@ -827,7 +831,10 @@
 
         // Store credentials
         localStorage.setItem('authToken', data.access_token);
-        localStorage.setItem('userEmail', data.user?.email || email);
+        const userEmail = data.user?.email || email;
+        localStorage.setItem('userEmail', userEmail);
+        const namePart = userEmail.split('@')[0].replace(/[._-]/g, ' ');
+        localStorage.setItem('userName', namePart.charAt(0).toUpperCase() + namePart.slice(1));
 
         // Redirect
         window.location.href = '/dashboard';
