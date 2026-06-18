@@ -20,6 +20,7 @@ COPY . .
 # Expose default port (Render sets $PORT dynamically)
 EXPOSE 10000
 
-# Run FastAPI using Gunicorn process manager with 4 concurrent Uvicorn workers
-# Uses shell form so $PORT is expanded at runtime (Render injects this)
-CMD gunicorn -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-10000} main:app
+# Run FastAPI with Gunicorn: 2 workers (free tier = 512MB RAM), preload to share ML models,
+# 120s timeout for model loading on cold start
+CMD gunicorn -w 2 -k uvicorn.workers.UvicornWorker --preload --timeout 120 --bind 0.0.0.0:${PORT:-10000} main:app
+
