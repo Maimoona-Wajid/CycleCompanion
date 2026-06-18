@@ -1,6 +1,6 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text
@@ -19,6 +19,7 @@ import pickle
 import numpy as np
 import pandas as pd
 from contextlib import asynccontextmanager
+import traceback
 
 # ==========================================
 # 1. DATABASE CONFIGURATION (Dual-Compatibility)
@@ -271,6 +272,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Global exception handler — returns actual errors as JSON (not generic 500)
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    tb = traceback.format_exc()
+    print(f"[UNHANDLED ERROR] {request.method} {request.url}\n{tb}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": str(exc), "type": type(exc).__name__}
+    )
 
 def get_db():
     db = SessionLocal()
