@@ -17,8 +17,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy all application code and saved ML model pickles
 COPY . .
 
-# Expose production port 8080
-EXPOSE 8080
+# Expose default port (Render sets $PORT dynamically)
+EXPOSE 10000
 
 # Run FastAPI using Gunicorn process manager with 4 concurrent Uvicorn workers
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8080", "main:app"]
+# Uses shell form so $PORT is expanded at runtime (Render injects this)
+CMD gunicorn -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-10000} main:app
