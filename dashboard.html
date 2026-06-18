@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CycleCompanion</title>
+    <!-- Import Google Fonts (Outfit) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #6B8E7F;
+            --primary-light: #8DA399;
+            --primary-dark: #4A6357;
+            --rose: #F5E6E8;
+            --rose-dark: #D3B9BC;
+            --rose-light: #FFF5F7;
+            --bg-gradient: linear-gradient(135deg, #F9F6F7 0%, #E3EBE7 100%);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --card-shadow: 0 8px 32px 0 rgba(107, 142, 127, 0.08);
+            --text-main: #2C3E50;
+            --text-muted: #7F8C8D;
+            --success: #2ECC71;
+            --danger: #EC5B5B;
+            --warning: #F1C40F;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        /* HEADER NAVIGATION */
+        .header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-tab {
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+            border: none;
+            background: transparent;
+        }
+
+        .nav-tab:hover {
+            background: rgba(107, 142, 127, 0.08);
+            color: var(--primary);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(107, 142, 127, 0.2);
+        }
+
+        .user-action-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 14px;
+            background: var(--rose);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--primary-dark);
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #BDC3C7;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #FADBD8;
+            color: #C0392B;
+            border-color: #F5B7B1;
+        }
+
+        /* MAIN LAYOUT CONTAINER */
+        .dashboard-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .dashboard-banner {
+            background: white;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner-text h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .banner-text p {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+
+        .seed-demo-btn {
+            background: linear-gradient(135deg, #F39C12 0%, #D35400 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.2);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .seed-demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.35);
+        }
+
+        /* CARD AND MODULE STYLING */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 26px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(107, 142, 127, 0.12);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.05);
+            padding-bottom: 14px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-icon {
+            font-size: 20px;
+        }
+
+        /* OVERVIEW TAB VISUALS */
+        .circle-progress-card {
+            background: linear-gradient(135deg, var(--rose-light) 0%, white 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .progress-wheel {
+            position: relative;
+            width: 180px;
+            height: 180px;
+        }
+
+        .wheel-svg {
+            transform: rotate(-90deg);
+        }
+
+        .wheel-circle-bg {
+            stroke: #F0EEEE;
+            fill: transparent;
+            stroke-width: 14;
+        }
+
+        .wheel-circle-fill {
+            stroke: var(--primary);
+            fill: transparent;
+            stroke-width: 14;
+            stroke-dasharray: 502.6;
+            stroke-dashoffset: 502.6;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .wheel-center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .wheel-day {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            line-height: 1;
+        }
+
+        .wheel-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        .cycle-data-details {
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .phase-badge {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .ml-assurance {
+            font-size: 12px;
+            font-weight: 700;
+            color: #27AE60;
+            background: #E8F8F5;
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 14px;
+        }
+
+        .phase-tip {
+            font-size: 14px;
+            line-height: 1.55;
+            color: var(--text-main);
+            background: white;
+            padding: 14px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-light);
+        }
+
+        /* WELLNESS RECOMMENDATIONS */
+        .rec-item {
+            background: #FAFBFC;
+            border: 1px solid #ECF0F1;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .rec-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .rec-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .rec-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        .rec-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .rec-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .rec-rationale {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            background: var(--rose);
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        /* TAB VIEWS */
+        .tab-view {
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* LOGGING TAB FORM STYLING */
+        .form-section {
+            margin-bottom: 24px;
+            border-bottom: 1px dashed #ECF0F1;
+            padding-bottom: 20px;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .section-header {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="number"],
+        .input-group input[type="date"],
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #EBF0F2;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-main);
+            background: #FAFBFC;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            background: white;
+        }
+
+        /* Symptoms Checkbox Buttons */
+        .symptom-tag-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .symptom-tag-btn {
+            cursor: pointer;
+            padding: 10px 16px;
+            background: #F0F3F4;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .symptom-tag-btn input[type="checkbox"] {
+            display: none;
+        }
+
+        .symptom-tag-btn.selected {
+            background: var(--rose);
+            color: var(--primary-dark);
+            border-color: var(--rose-dark);
+        }
+
+        .slider-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .slider-bar {
+            flex: 1;
+            accent-color: var(--primary);
+            height: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--primary);
+            width: 30px;
+            text-align: right;
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(107, 142, 127, 0.25);
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* WORKPLACE SCHEDULER DESIGN */
+        .task-list {
+            margin-top: 14px;
+        }
+
+        .task-card {
+            border: 1px solid #ECF0F1;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            background: #FAFBFC;
+        }
+
+        .task-card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transform: translateX(4px);
+        }
+
+        .task-info-side {
+            max-width: 65%;
+        }
+
+        .task-tag-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .task-cat-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #EAECEE;
+            color: #5D6D7E;
+        }
+
+        .comp-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .comp-high { background: #FADBD8; color: #C0392B; }
+        .comp-medium { background: #FCF3CF; color: #B7950B; }
+        .comp-low { background: #D4EFDF; color: #1E8449; }
+
+        .align-status-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .score-display {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            background: var(--rose);
+            padding: 6px 12px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
+        }
+
+        .score-num {
+            line-height: 1.1;
+        }
+
+        .score-lbl {
+            font-size: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .task-right-side {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .complete-task-btn {
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .complete-task-btn:hover {
+            background: var(--primary);
+        }
+
+        .completed-timestamp {
+            font-size: 12px;
+            font-style: italic;
+            color: #27AE60;
+            font-weight: 600;
+        }
+
+        /* AI / ML CENTER VISUAL TERMINAL */
+        .importance-bar-container {
+            width: 100%;
+            background: #EAEDED;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .importance-bar-fill {
+            background: var(--primary);
+            height: 100%;
+            border-radius: 6px;
+        }
+
+        .terminal-container {
+            background: #1C2833;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #2ECC71;
+            font-size: 13px;
+            min-height: 220px;
+            max-height: 280px;
+            overflow-y: auto;
+            border: 2px solid #2C3E50;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin-top: 14px;
+        }
+
+        .terminal-line {
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        /* MODAL SCREEN FOR TASK COMPLETION DETAILS */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(44, 62, 80, 0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-card {
+            background: white;
+            width: 100%;
+            max-width: 440px;
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 45px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            border-bottom: 1px dashed #ECF0F1;
+            padding-bottom: 10px;
+        }
+
+        /* FORECAST STYLING */
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .forecast-card {
+            background: #FAFBFC;
+            border: 1px solid #ECF0F1;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .forecast-day-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .forecast-symptom {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .forecast-prob {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            background: var(--rose);
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 6px;
+        }
+
+        .forecast-badge-High { color: #EC5B5B; }
+        .forecast-badge-Moderate { color: #F1C40F; }
+        .forecast-badge-Low { color: #2ECC71; }
+    </style>
+</head>
+<body>
+
+    <!-- Header navigation -->
+    <header class="header">
+        <div class="logo">🌸 CycleCompanion</div>
+        <nav class="nav-links">
+            <button class="nav-tab active" id="tab-overview" onclick="switchTab('overview')">Overview</button>
+            <button class="nav-tab" id="tab-log" onclick="switchTab('log')">Daily Logger</button>
+            <button class="nav-tab" id="tab-scheduler" onclick="switchTab('scheduler')">Smart Scheduler</button>
+            <button class="nav-tab" id="tab-analytics" onclick="switchTab('analytics')">Analytics</button>
+            <button class="nav-tab" id="tab-ml" onclick="switchTab('ml')">AI Model Center</button>
+            <button class="nav-tab" id="tab-privacy" onclick="switchTab('privacy')">Privacy</button>
+        </nav>
+        <div class="user-action-box">
+            <div class="user-profile">
+                <div class="user-avatar" id="avatar-letter">U</div>
+                <span class="user-name" id="user-display-name">Username</span>
+            </div>
+            <button class="logout-btn" onclick="triggerLogout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <!-- Banner Title -->
+        <div class="dashboard-banner">
+            <div class="banner-text">
+                <h1 id="banner-welcome">Welcome back! 👋</h1>
+                <p>Constructing adaptive hormonal models to enhance your health and performance.</p>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 1. OVERVIEW TAB -->
+        <!-- ========================================== -->
+        <div class="tab-view" id="view-overview">
+            <div class="grid-3">
+                <!-- Circular Wheel Indicator -->
+                <div class="card circle-progress-card">
+                    <div class="progress-wheel">
+                        <svg class="wheel-svg" width="180" height="180">
+                            <circle class="wheel-circle-bg" cx="90" cy="90" r="80"></circle>
+                            <circle class="wheel-circle-fill" id="indicator-circle-fill" cx="90" cy="90" r="80"></circle>
+                        </svg>
+                        <div class="wheel-center-text">
+                            <div class="wheel-day" id="indicator-day">1</div>
+                            <div class="wheel-label">Day of Cycle</div>
+                        </div>
+                    </div>
+                    <div class="cycle-data-details">
+                        <div class="ml-assurance">🤖 Bayesian AI Phase Classification</div>
+                        <div class="phase-badge" id="indicator-phase">Menstrual Phase</div>
+                        <div style="font-size: 14px; color: var(--text-muted); font-weight: 500; margin-bottom: 12px;">
+                            Model Confidence Match: <span id="indicator-confidence">95%</span>
+                        </div>
+                        <p style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Prediction Rationale:</p>
+                        <div class="phase-tip" id="indicator-desc">
+                            Physiological cycle syncing is computing current energy and tracking patterns...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Peak Productivity hours -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">⚡</span>Focus Forecast</h2>
+                    </div>
+                    <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 18px; border-radius: 14px; margin-bottom: 14px;">
+                        <div style="font-size: 24px; font-weight: 800; margin-bottom: 4px;" id="focus-hours">9 AM - 12 PM</div>
+                        <div style="font-size: 13px; font-weight: 600; text-transform: uppercase;" id="focus-title">High Cognitive Window</div>
+                    </div>
+                    <p style="font-size: 14px; line-height: 1.5; color: var(--text-main);" id="focus-desc">
+                        Schedule complex problem solving. Estrogen levels are boosting neural clarity.
+                    </p>
+                </div>
+
+                <!-- Wellness Tips -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">💡</span>Physiology Sync</h2>
+                    </div>
+                    <p style="font-size: 14px; font-weight: 600; color: var(--primary-dark); text-transform: uppercase; margin-bottom: 8px;">Physical Recommendation</p>
+                    <p style="font-size: 14px; line-height: 1.55; color: var(--text-main);" id="overview-exercise-tip">
+                        Gentle walks or restorative flow yoga is advised to control stress response.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Second row of Overview: Exercises recommendations & Quick logs info -->
+            <div class="grid-2">
+                <!-- Smart Exercise recommendations -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">🏃‍♀️</span>Content-Based Fitness Match (Top 3)</h2>
+                    </div>
+                    <div id="exercise-rec-list">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Metrics Overview -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">🎯</span>Daily State Vector</h2>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div>
+                            <p style="font-size: 14px; font-weight: 600; margin-bottom: 6px;">Logged Energy Level (1-10)</p>
+                            <div style="width: 100%; background: #EAEDED; height: 10px; border-radius: 5px; overflow: hidden;">
+                                <div style="background: var(--primary); height: 100%; width: 60%;" id="energy-progress"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <p style="font-size: 14px; font-weight: 600; margin-bottom: 6px;">Logged Mood Vector (1-10)</p>
+                            <div style="width: 100%; background: #EAEDED; height: 10px; border-radius: 5px; overflow: hidden;">
+                                <div style="background: #F1C40F; height: 100%; width: 50%;" id="mood-progress"></div>
+                            </div>
+                        </div>
+                        <div style="background: #FAFBFC; padding: 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; border: 1px solid #ECF0F1;">
+                            ⚡ **Machine Learning Advice:** Logging wellness variables daily increases Bayesian phase tracking precision by **4.2%** per logged cycle.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 2. LOGGER TAB -->
+        <!-- ========================================== -->
+        <div class="tab-view hidden" id="view-log">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">📝</span>Log Daily Health Vector</h2>
+                    </div>
+                    <form id="daily-log-form">
+                        <div class="form-section">
+                            <div class="section-header">1. Active Physiological Signals</div>
+                            <div class="input-group" style="margin-bottom: 16px;">
+                                <label for="log-date">Log Entry Date</label>
+                                <input type="date" id="log-date" required>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 16px;">
+                                <label>Logged Physical/Emotional Symptoms</label>
+                                <div class="symptom-tag-grid">
+                                    <div class="symptom-tag-btn" onclick="toggleSymptomTag(this)">
+                                        <input type="checkbox" name="symptoms" value="cramps"> Cramps
+                                    </div>
+                                    <div class="symptom-tag-btn" onclick="toggleSymptomTag(this)">
+                                        <input type="checkbox" name="symptoms" value="fatigue"> Fatigue
+                                    </div>
+                                    <div class="symptom-tag-btn" onclick="toggleSymptomTag(this)">
+                                        <input type="checkbox" name="symptoms" value="bloating"> Bloating
+                                    </div>
+                                    <div class="symptom-tag-btn" onclick="toggleSymptomTag(this)">
+                                        <input type="checkbox" name="symptoms" value="headache"> Headache
+                                    </div>
+                                    <div class="symptom-tag-btn" onclick="toggleSymptomTag(this)">
+                                        <input type="checkbox" name="symptoms" value="mood swings"> Mood Swings
+                                    </div>
+                                    <div class="symptom-tag-btn" onclick="toggleSymptomTag(this)">
+                                        <input type="checkbox" name="symptoms" value="acne"> Acne
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 16px;">
+                                <label>Active Energy capacity (1-10)</label>
+                                <div class="slider-box">
+                                    <input type="range" class="slider-bar" id="log-energy" min="1" max="10" value="6" oninput="updateSliderVal(this)">
+                                    <span class="slider-value" id="val-log-energy">6</span>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Mood / Wellbeing Score (1-10)</label>
+                                <div class="slider-box">
+                                    <input type="range" class="slider-bar" id="log-mood" min="1" max="10" value="6" oninput="updateSliderVal(this)">
+                                    <span class="slider-value" id="val-log-mood">6</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="section-header">2. Workplace Performance</div>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="log-prod">Productivity Level (1-10)</label>
+                                    <div class="slider-box">
+                                        <input type="range" class="slider-bar" id="log-prod" min="1" max="10" value="6" oninput="updateSliderVal(this)">
+                                        <span class="slider-value" id="val-log-prod">6</span>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="log-cog">Cognitive Speed (1-10)</label>
+                                    <div class="slider-box">
+                                        <input type="range" class="slider-bar" id="log-cog" min="1" max="10" value="6" oninput="updateSliderVal(this)">
+                                        <span class="slider-value" id="val-log-cog">6</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="log-hours">Work Hours Logged</label>
+                                    <input type="number" id="log-hours" step="0.5" min="0" max="24" value="8">
+                                </div>
+                                <div class="input-group">
+                                    <label for="log-notes">Workflow Description</label>
+                                    <textarea id="log-notes" placeholder="Tackled technical documentation, refactoring..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="section-header">3. Completed Workouts (Optional)</div>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="log-ex-type">Exercise Executed</label>
+                                    <select id="log-ex-type">
+                                        <option value="">None / Rest Day</option>
+                                        <option value="Restorative Vinyasa Flow">Restorative Vinyasa Flow</option>
+                                        <option value="Flow Yoga & Deep Stretching">Flow Yoga & Deep Stretching</option>
+                                        <option value="Pilates Core Sculpting">Pilates Core Sculpting</option>
+                                        <option value="Full-Body Muscle Conditioning">Full-Body Muscle Conditioning</option>
+                                        <option value="High-Intensity Interval Training (HIIT)">High-Intensity Interval Training (HIIT)</option>
+                                        <option value="Steady-State Running & Cardio">Steady-State Running & Cardio</option>
+                                        <option value="Mat Pilates & Stretching">Mat Pilates & Stretching</option>
+                                        <option value="Power Yoga & Balance">Power Yoga & Balance</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="log-ex-dur">Duration (minutes)</label>
+                                    <input type="number" id="log-ex-dur" value="30" min="0">
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="log-ex-int">Felt Intensity</label>
+                                    <select id="log-ex-int">
+                                        <option value="low">Low Intensity</option>
+                                        <option value="medium" selected>Medium Intensity</option>
+                                        <option value="high">High Intensity</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="log-ex-rating">Physiological Feel Rating (1-5)</label>
+                                    <select id="log-ex-rating">
+                                        <option value="5">Excellent</option>
+                                        <option value="4" selected>Good</option>
+                                        <option value="3">Moderate</option>
+                                        <option value="2">Poor</option>
+                                        <option value="1">Painful / Draining</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="action-btn">Log Matrix Vector</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">📅</span>Record Menstrual Cycle Start</h2>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+                            Logging the exact day your period begins recalibrates the **Bayesian phase model** immediately. Standard cycles range from 21 to 35 days.
+                        </p>
+                        <div style="display: flex; gap: 10px; align-items: flex-end;">
+                            <div class="input-group" style="flex: 1;">
+                                <label for="period-start-date">Select Starting Date</label>
+                                <input type="date" id="period-start-date">
+                            </div>
+                            <button class="action-btn" onclick="logPeriodStart()" style="width: auto; height: 48px;">Recalibrate</button>
+                        </div>
+                    </div>
+                    <div style="background: var(--rose-light); border: 1px dashed var(--rose-dark); border-radius: 12px; padding: 16px; font-size: 13px; color: var(--text-main); line-height: 1.5;">
+                        ⚡ **Machine Learning Model Accuracy Note:** Recalibrations eliminate seasonal phase drift, keeping ARIMA forecasts synchronous with biological realities.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 3. SCHEDULER TAB -->
+        <!-- ========================================== -->
+        <div class="tab-view hidden" id="view-scheduler">
+            <div class="grid-3" style="grid-template-columns: 1fr 2fr;">
+                <!-- Add Task Form -->
+                <div class="card" style="height: fit-content;">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">➕</span>Create Task Block</h2>
+                    </div>
+                    <form id="new-task-form">
+                        <div class="input-group" style="margin-bottom: 14px;">
+                            <label for="task-name">Task Name</label>
+                            <input type="text" id="task-name" placeholder="E.g., Debug auth algorithms" required>
+                        </div>
+                        <div class="input-group" style="margin-bottom: 14px;">
+                            <label for="task-complexity">Cognitive Complexity</label>
+                            <select id="task-complexity" required>
+                                <option value="high">High Complexity (Abstract Logic)</option>
+                                <option value="medium" selected>Medium Complexity (Standard Execution)</option>
+                                <option value="low">Low Complexity (Administrative / Repetitive)</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="margin-bottom: 14px;">
+                            <label for="task-urgency">Urgency Metric</label>
+                            <select id="task-urgency" required>
+                                <option value="high">High Urgency (Deadline &lt; 48 hours)</option>
+                                <option value="medium" selected>Medium Urgency (Deadline &lt; 7 days)</option>
+                                <option value="low">Low Urgency (Flexible Timeline)</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="margin-bottom: 18px;">
+                            <label for="task-category">Task Category</label>
+                            <select id="task-category" required>
+                                <option value="technical">Technical (Design, Programming)</option>
+                                <option value="creative">Creative (Brainstorming, Writing)</option>
+                                <option value="admin">Administrative (Emails, Formatting)</option>
+                                <option value="management">Management (Client, Slides)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="action-btn">Schedule Task Block</button>
+                    </form>
+                </div>
+
+                <!-- Scheduled List -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">🧠</span>Q-Learning Reinforcement Scheduler</h2>
+                        <span style="font-size: 11px; font-weight: 700; color: #27AE60; background: #E8F8F5; padding: 4px 8px; border-radius: 8px;">Active RL Engine</span>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+                        The model evaluates task difficulty and scheduled phase weights (Q-matrix). Tasks with **Optimal Peak Alignment** are boosted to the top of your list! Completing tasks modifies your personalized weights.
+                    </p>
+                    
+                    <div class="task-list" id="active-task-list">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 4. ANALYTICS TAB -->
+        <!-- ========================================== -->
+        <div class="tab-view hidden" id="view-analytics">
+            <div class="grid-2">
+                <!-- Symptom occurrence chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">📊</span>Symptom Frequency across Cycle Phases</h2>
+                    </div>
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="chart-symptoms"></canvas>
+                    </div>
+                </div>
+
+                <!-- Productivity Energy correlation -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">📈</span>Energy & Productivity Phase Alignment</h2>
+                    </div>
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="chart-performance"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forecaster matrix row -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><span class="card-icon">🔮</span>ARIMA Seasonal Symptom Forecaster Matrix</h2>
+                </div>
+                <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5;">
+                    Analyzing Gaussian seasonal variances to predict potential symptoms for the upcoming days. High probabilities will trigger preemptive warnings.
+                </p>
+                <div class="forecast-grid" id="symptom-forecast-grid">
+                    <!-- Forecast items dynamically added -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 5. AI / ML MODEL CENTER -->
+        <!-- ========================================== -->
+        <div class="tab-view hidden" id="view-ml">
+            <div class="grid-2">
+                <!-- Active Model Stats -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">🎛️</span>Biometric ML Model Index</h2>
+                    </div>
+                    <div id="ml-models-container" style="display: flex; flex-direction: column; gap: 14px;">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Feature Importance parameters -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">🧬</span>Random Forest Feature Importances</h2>
+                    </div>
+                    <div id="feature-importance-list">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Model Simulator and Terminal -->
+            <div class="card">
+                <div class="card-header" style="border-bottom: none; margin-bottom: 0;">
+                    <h2 class="card-title"><span class="card-icon">📟</span>Live ML Training Engine console</h2>
+                    <button class="action-btn" onclick="trainMLModels()" style="width: auto; padding: 10px 20px;">⚡ Execute Live Retraining</button>
+                </div>
+                <div class="terminal-container" id="terminal-console">
+                    <div class="terminal-line">CycleCompanion AI Kernel Online. Waiting for supervisor instructions...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 6. PRIVACY & COMPLIANCE -->
+        <!-- ========================================== -->
+        <div class="tab-view hidden" id="view-privacy">
+            <div class="grid-2">
+                <!-- Security panels -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">🛡️</span>Healthcare Data Sovereignty</h2>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 16px; font-size: 14px; line-height: 1.6;">
+                        <p><strong>GDPR / HIPAA Standards Alignment:</strong> Sensitive medical logs (menstrual dates and symptoms) are fully segmented using row-level encryption parameters.</p>
+                        <p><strong>Pakistan Data Sovereignty Compliance:</strong> In alignment with national policies, health datasets reside on secure, local nodes with standard AES-256 state encryption at rest.</p>
+                        <hr style="border: 0; border-top: 1px solid #ECF0F1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <p style="font-weight: 700;">Local Sandbox Mode</p>
+                                <p style="font-size: 12px; color: var(--text-muted);">Isolate databases within current sandbox.</p>
+                            </div>
+                            <input type="checkbox" style="width: 20px; height: 20px; accent-color: var(--primary);" checked>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <p style="font-weight: 700;">Zero-Knowledge Sync</p>
+                                <p style="font-size: 12px; color: var(--text-muted);">Encrypt credentials before cloud backup.</p>
+                            </div>
+                            <input type="checkbox" style="width: 20px; height: 20px; accent-color: var(--primary);" checked>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ethical guidelines declaration -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><span class="card-icon">📜</span>Supervisor Statement: Ethical ML Policies</h2>
+                    </div>
+                    <div style="font-size: 14px; line-height: 1.6; color: var(--text-main);">
+                        <p style="margin-bottom: 12px;"><strong>Human-in-the-Loop Principle:</strong> ML forecasts and recommendations serve purely as wellness advisors. They do not constitute diagnostic medical conclusions.</p>
+                        <p style="margin-bottom: 12px;"><strong>Anti-Surveillance Lock:</strong> Workplace productivity analysis is kept strictly private. The scheduler rejects any remote telemetry or manager-accessible reports, shielding the employee from predictive surveillance.</p>
+                        <div style="background: #FAFBFC; padding: 14px; border-radius: 12px; font-size: 13px; border-left: 4px solid var(--primary);">
+                            🌸 **Empowerment Core:** Designed specifically to align demanding corporate project sprints with natural physical resource cycles.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TASK COMPLETION METRIC MODAL -->
+    <div class="modal" id="task-modal">
+        <div class="modal-card">
+            <div class="modal-header">Log Completion Analytics</div>
+            <form id="modal-completion-form">
+                <input type="hidden" id="modal-task-id">
+                <div class="input-group" style="margin-bottom: 16px;">
+                    <label for="modal-time">Actual Time Taken (minutes)</label>
+                    <input type="number" id="modal-time" value="30" min="5" required>
+                </div>
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <label for="modal-rating">Quality Rating of Execution (1-5)</label>
+                    <select id="modal-rating" required>
+                        <option value="5">5 - Excellent (Fully Complete & Outstanding)</option>
+                        <option value="4" selected>4 - Good (High Efficiency & Accuracy)</option>
+                        <option value="3">3 - Moderate (Completed with average effort)</option>
+                        <option value="2">2 - Poor (Drained, incomplete requirements)</option>
+                        <option value="1">1 - Failed (Drained, deferred task mid-way)</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="logout-btn" onclick="closeCompletionModal()" style="flex: 1;">Cancel</button>
+                    <button type="submit" class="action-btn" style="flex: 1; padding: 10px 0;">Log & Sync Weights</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8081";
+        let activeTab = "overview";
+        let symptomChartObj = null;
+        let perfChartObj = null;
+
+        // AUTHENTICATION CHECK ON LOAD
+        window.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Set logged user display name
+            const username = localStorage.getItem('userName') || "USER";
+            document.getElementById('user-display-name').textContent = username;
+            document.getElementById('avatar-letter').textContent = username.charAt(0);
+            document.getElementById('banner-welcome').textContent = `Welcome back, ${username}! 👋`;
+
+            // Set logging today's date automatically
+            document.getElementById('log-date').value = new Date().toISOString().split('T')[0];
+
+            // Load initial core data
+            await fetchDashboardData();
+            await fetchTaskList();
+            await loadAnalyticsCharts();
+            await loadMLMetrics();
+        });
+
+        // 1. DYNAMIC TAB CONTAINER SWITCHER
+        function switchTab(target) {
+            const tabs = ["overview", "log", "scheduler", "analytics", "ml", "privacy"];
+            tabs.forEach(t => {
+                document.getElementById(`tab-${t}`).classList.remove('active');
+                document.getElementById(`view-${t}`).classList.add('hidden');
+            });
+
+            document.getElementById(`tab-${target}`).classList.add('active');
+            document.getElementById(`view-${target}`).classList.remove('hidden');
+            activeTab = target;
+
+            // Trigger redraw for Chart.js to prevent spacing bugs
+            if (target === 'analytics') {
+                loadAnalyticsCharts();
+            } else if (target === 'ml') {
+                loadMLMetrics();
+            }
+        }
+
+        function updateSliderVal(slider) {
+            document.getElementById(`val-${slider.id}`).textContent = slider.value;
+        }
+
+        function toggleSymptomTag(tag) {
+            const checkbox = tag.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            if (checkbox.checked) {
+                tag.classList.add('selected');
+            } else {
+                tag.classList.remove('selected');
+            }
+        }
+
+        // 2. FETCH OVERVIEW biometrics DATA FROM FASTAPI
+        async function fetchDashboardData() {
+            const token = localStorage.getItem('authToken');
+            try {
+                const res = await fetch(`${API_BASE}/api/dashboard-data`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Update wheel progress day
+                    document.getElementById('indicator-day').textContent = data.current_day;
+                    document.getElementById('indicator-phase').textContent = data.phase;
+                    document.getElementById('indicator-confidence').textContent = `${data.confidence}%`;
+                    document.getElementById('indicator-desc').textContent = data.productivity_tip;
+
+                    // Compute dynamic circular stroke offset
+                    const progress = (data.current_day / data.cycle_length) * 100;
+                    const circumference = 2 * Math.PI * 80;
+                    const offset = circumference - (progress / 100) * circumference;
+                    document.getElementById('indicator-circle-fill').style.strokeDashoffset = offset;
+
+                    // Update Focus Window
+                    document.getElementById('focus-hours').textContent = data.focus_window.hours;
+                    document.getElementById('focus-title').textContent = data.focus_window.title;
+                    document.getElementById('focus-desc').textContent = data.focus_window.desc;
+
+                    // Update Health Tips
+                    document.getElementById('overview-exercise-tip').textContent = data.exercise_tip;
+
+                    // Update Dials
+                    document.getElementById('energy-progress').style.width = `${data.energy_level * 10}%`;
+                    document.getElementById('mood-progress').style.width = `${data.mood_score * 10}%`;
+
+                    // Populate Top 3 Exercises
+                    const recBox = document.getElementById('exercise-rec-list');
+                    recBox.innerHTML = '';
+                    data.exercise_recommendations.forEach(item => {
+                        const styleClass = item.category.toLowerCase() === 'yoga' ? 'bg-success text-white' : 'bg-primary text-white';
+                        recBox.innerHTML += `
+                            <div class="rec-item">
+                                <div class="rec-meta">
+                                    <span class="rec-name">🏃‍♀️ ${item.name}</span>
+                                    <span class="rec-pill ${styleClass}">${item.category}</span>
+                                </div>
+                                <p class="rec-desc">${item.desc}</p>
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span class="rec-rationale">🧬 ${item.rationale}</span>
+                                    <span style="font-size:12px; font-weight:700; color:var(--primary);">Score: ${item.score}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error("Dashboard core fetch failure", err);
+            }
+        }
+
+        // 3. DAILY HEALTH METRICS LOGGER FORM SUBMIT
+        document.getElementById('daily-log-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('authToken');
+
+            // Collect selected symptoms
+            const symptomCheckboxes = document.querySelectorAll('input[name="symptoms"]:checked');
+            const symptoms = Array.from(symptomCheckboxes).map(cb => cb.value);
+
+            const payload = {
+                date: document.getElementById('log-date').value,
+                energy_level: parseInt(document.getElementById('log-energy').value),
+                mood_score: parseInt(document.getElementById('log-mood').value),
+                symptoms: symptoms,
+                productivity_score: parseInt(document.getElementById('log-prod').value),
+                work_hours: parseFloat(document.getElementById('log-hours').value),
+                cognitive_score: parseInt(document.getElementById('log-cog').value),
+                notes: document.getElementById('log-notes').value,
+                exercise_type: document.getElementById('log-ex-type').value || null,
+                exercise_duration: parseInt(document.getElementById('log-ex-dur').value) || null,
+                exercise_intensity: document.getElementById('log-ex-type').value ? document.getElementById('log-ex-int').value : null,
+                exercise_rating: document.getElementById('log-ex-type').value ? parseInt(document.getElementById('log-ex-rating').value) : null
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/api/log-daily`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    alert('✓ Daily biometric vector logged successfully!');
+                    document.getElementById('daily-log-form').reset();
+                    // Reset custom tags selection style
+                    document.querySelectorAll('.symptom-tag-btn').forEach(btn => btn.classList.remove('selected'));
+                    await fetchDashboardData();
+                    await loadAnalyticsCharts();
+                } else {
+                    const err = await res.json();
+                    alert(err.detail || 'Metrics logging rejected.');
+                }
+            } catch (err) {
+                alert('Communication error with server.');
+            }
+        });
+
+        // 4. LOG CYCLE/PERIOD START CALIBRATION
+        async function logPeriodStart() {
+            const token = localStorage.getItem('authToken');
+            const date = document.getElementById('period-start-date').value;
+            if (!date) {
+                alert('Please select a valid date first.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/update-period`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ last_period_date: date })
+                });
+
+                if (res.ok) {
+                    alert('✓ Period starting vector locked! Phase prediction parameters updated.');
+                    await fetchDashboardData();
+                } else {
+                    alert('Failed to update period.');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // 5. FETCH ACTIVE REINFORCEMENT TASK LIST
+        async function fetchTaskList() {
+            const token = localStorage.getItem('authToken');
+            try {
+                const res = await fetch(`${API_BASE}/api/tasks`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const tasks = await res.json();
+
+                if (res.ok) {
+                    const listBox = document.getElementById('active-task-list');
+                    listBox.innerHTML = '';
+
+                    if (tasks.length === 0) {
+                        listBox.innerHTML = `
+                            <div style="text-align:center; padding:30px; color:var(--text-muted); font-size:14px;">
+                                No pending task blocks found. Create a task block to check its ML energy alignment!
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    tasks.forEach(task => {
+                        const styleClass = task.status === 'completed' ? 'opacity: 0.7;' : '';
+                        const actionBtnHTML = task.status === 'pending' 
+                            ? `<button class="complete-task-btn" onclick="openCompletionModal(${task.id})">Complete</button>`
+                            : `<span class="completed-timestamp">✓ Resolved (${task.cycle_phase_completed.split(' ')[0]})</span>`;
+                        
+                        listBox.innerHTML += `
+                            <div class="task-card" style="${styleClass}">
+                                <div class="task-info-side">
+                                    <div class="task-tag-row">
+                                        <span class="task-cat-badge">${task.category}</span>
+                                        <span class="comp-badge comp-${task.complexity}">${task.complexity}</span>
+                                        <span class="align-status-badge ${task.alignment.badge}">${task.alignment.level}</span>
+                                    </div>
+                                    <h3 class="task-title">${task.task_name}</h3>
+                                    <p style="font-size:12px; color:var(--text-muted); line-height:1.4;">🤖 <strong>Advice:</strong> ${task.alignment.recommendation}</p>
+                                </div>
+                                <div class="task-right-side">
+                                    <div class="score-display">
+                                        <span class="score-num">${task.alignment.score}</span>
+                                        <span class="score-lbl">RL Align</span>
+                                    </div>
+                                    ${actionBtnHTML}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // 6. CREATE NEW TASK BLOCK SUBMISSION
+        document.getElementById('new-task-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('authToken');
+
+            const payload = {
+                task_name: document.getElementById('task-name').value,
+                complexity: document.getElementById('task-complexity').value,
+                urgency: document.getElementById('task-urgency').value,
+                category: document.getElementById('task-category').value
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/api/tasks`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    document.getElementById('new-task-form').reset();
+                    await fetchTaskList();
+                } else {
+                    alert('Task scheduling failure.');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // MODAL TOGGLE & SUBMIT FOR REINFORCEMENT LEARNING LOGGING
+        function openCompletionModal(taskId) {
+            document.getElementById('modal-task-id').value = taskId;
+            document.getElementById('task-modal').style.display = 'flex';
+        }
+
+        function closeCompletionModal() {
+            document.getElementById('task-modal').style.display = 'none';
+        }
+
+        document.getElementById('modal-completion-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('authToken');
+            const id = document.getElementById('modal-task-id').value;
+
+            const payload = {
+                time_taken: parseInt(document.getElementById('modal-time').value),
+                quality_rating: parseInt(document.getElementById('modal-rating').value)
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/api/tasks/${id}/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    closeCompletionModal();
+                    alert(`✓ Task logged! Q-value updated: Old Q ${data.rl_log.old_q} → New Q ${data.rl_log.new_q}. Rewards matched: ${data.rl_log.reward}`);
+                    await fetchTaskList();
+                    await loadMLMetrics();
+                } else {
+                    alert('Failed to log completion.');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // 7. LOAD VISUAL ANALYTICS CHARTS (CHART.JS)
+        async function loadAnalyticsCharts() {
+            const token = localStorage.getItem('authToken');
+            try {
+                const res = await fetch(`${API_BASE}/api/analytics`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    if (!data.has_data) {
+                        return;
+                    }
+
+                    // Populate ARIMA forecasts table
+                    const forecastGrid = document.getElementById('symptom-forecast-grid');
+                    forecastGrid.innerHTML = '';
+                    data.forecast.forEach(item => {
+                        forecastGrid.innerHTML += `
+                            <div class="forecast-card">
+                                <div class="forecast-day-name">${item.name}</div>
+                                <div class="forecast-symptom">⚠️ ${item.high_risk_symptom}</div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                                    <span class="forecast-prob">Prob: ${item.probability}%</span>
+                                    <span class="forecast-badge-${item.risk_level}" style="font-size:11px; font-weight:700;">${item.risk_level} Risk</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // 1. Bar Chart Symptom Distribution
+                    const symptomCtx = document.getElementById('chart-symptoms').getContext('2d');
+                    if (symptomChartObj) {
+                        symptomChartObj.destroy();
+                    }
+
+                    const phases = ["Menstrual Phase", "Follicular Phase", "Ovulatory Phase", "Luteal Phase"];
+                    const crampsData = phases.map(p => data.symptoms_distribution[p]?.cramps || 0);
+                    const fatigueData = phases.map(p => data.symptoms_distribution[p]?.fatigue || 0);
+                    const bloatingData = phases.map(p => data.symptoms_distribution[p]?.bloating || 0);
+                    const headacheData = phases.map(p => data.symptoms_distribution[p]?.headache || 0);
+
+                    symptomChartObj = new Chart(symptomCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ["Menstrual", "Follicular", "Ovulatory", "Luteal"],
+                            datasets: [
+                                { label: 'Cramps', data: crampsData, backgroundColor: '#EC7063' },
+                                { label: 'Fatigue', data: fatigueData, backgroundColor: '#5DADE2' },
+                                { label: 'Bloating', data: bloatingData, backgroundColor: '#F4D03F' },
+                                { label: 'Headache', data: headacheData, backgroundColor: '#AF7AC5' }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } },
+                            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                        }
+                    });
+
+                    // 2. Correlation line chart
+                    const perfCtx = document.getElementById('chart-performance').getContext('2d');
+                    if (perfChartObj) {
+                        perfChartObj.destroy();
+                    }
+
+                    const energyAverages = phases.map(p => data.phase_performance[p]?.avg_energy || 0);
+                    const prodAverages = phases.map(p => data.phase_performance[p]?.avg_productivity || 0);
+
+                    perfChartObj = new Chart(perfCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ["Menstrual", "Follicular", "Ovulatory", "Luteal"],
+                            datasets: [
+                                {
+                                    label: 'Average Energy Level (1-10)',
+                                    data: energyAverages,
+                                    borderColor: '#E67E22',
+                                    backgroundColor: 'transparent',
+                                    tension: 0.35,
+                                    borderWidth: 3,
+                                    pointRadius: 4
+                                },
+                                {
+                                    label: 'Average Productivity Level (1-10)',
+                                    data: prodAverages,
+                                    borderColor: '#1ABC9C',
+                                    backgroundColor: 'transparent',
+                                    tension: 0.35,
+                                    borderWidth: 3,
+                                    pointRadius: 4
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } },
+                            scales: { y: { min: 1, max: 10 } }
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error("Charts load fail", err);
+            }
+        }
+
+        // 8. LAUNCH ML METRICS & FEATURE IMPORTANCES
+        async function loadMLMetrics() {
+            const token = localStorage.getItem('authToken');
+            try {
+                const res = await fetch(`${API_BASE}/api/ml/metrics`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Populate models index table
+                    const modelBox = document.getElementById('ml-models-container');
+                    modelBox.innerHTML = '';
+                    data.models.forEach(model => {
+                        modelBox.innerHTML += `
+                            <div style="background:#FAFBFC; border:1px solid #ECF0F1; padding:14px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <p style="font-weight:700; font-size:14px; color:var(--text-main);">${model.name}</p>
+                                    <p style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">${model.type}</p>
+                                </div>
+                                <div style="text-align:right;">
+                                    <span style="font-size:12px; font-weight:700; color:#27AE60; background:#E8F8F5; padding:4px 8px; border-radius:8px;">${model.accuracy}</span>
+                                    <p style="font-size:10px; color:var(--text-muted); font-weight:500; margin-top:4px;">Status: ${model.status}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // Populate Feature Importances
+                    const list = document.getElementById('feature-importance-list');
+                    list.innerHTML = '';
+                    data.feature_importance.forEach(feat => {
+                        const pct = feat.importance * 100;
+                        list.innerHTML += `
+                            <div style="margin-bottom:14px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; font-weight:600;">
+                                    <span>${feat.feature}</span>
+                                    <span style="color:var(--primary-dark); font-weight:700;">${pct.toFixed(0)}%</span>
+                                </div>
+                                <div class="importance-bar-container">
+                                    <div class="importance-bar-fill" style="width: ${pct}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // 9. EXECUTE LIVE RETRAINING ENGINE (TERMINAL SIMULATOR)
+        async function trainMLModels() {
+            const token = localStorage.getItem('authToken');
+            const consoleBox = document.getElementById('terminal-console');
+            consoleBox.innerHTML = '';
+
+            addConsoleLine("Connecting to ML Training Core on port 8081...", "#F1C40F");
+
+            try {
+                const res = await fetch(`${API_BASE}/api/ml/train`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Type out lines sequentially with animation delays
+                    let idx = 0;
+                    function typeNextLine() {
+                        if (idx < data.logs.length) {
+                            const isSuccess = data.logs[idx].startsWith('✓');
+                            const color = isSuccess ? '#2ECC71' : '#AEB6BF';
+                            addConsoleLine(data.logs[idx], color);
+                            idx++;
+                            setTimeout(typeNextLine, 350);
+                        } else {
+                            loadMLMetrics(); // Update metrics UI
+                        }
+                    }
+                    setTimeout(typeNextLine, 400);
+                }
+            } catch (err) {
+                addConsoleLine("ERROR: Connection with core training thread failed.", "#EC5B5B");
+            }
+        }
+
+        function addConsoleLine(text, color) {
+            const consoleBox = document.getElementById('terminal-console');
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            line.style.color = color;
+            line.textContent = `[LOG] ${new Date().toLocaleTimeString()} - ${text}`;
+            consoleBox.appendChild(line);
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
+
+        // Pre-seed database seeding script removed to ensure only real user logs are supported.
+
+        function triggerLogout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
