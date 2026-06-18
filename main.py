@@ -291,10 +291,15 @@ def get_db():
         db.close()
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    import hashlib, bcrypt
+    # Pre-hash with SHA-256 to avoid bcrypt's 72-byte limit
+    sha256_hash = hashlib.sha256(password.encode('utf-8')).hexdigest().encode('utf-8')
+    return bcrypt.hashpw(sha256_hash, bcrypt.gensalt()).decode('utf-8')
 
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    import hashlib, bcrypt
+    sha256_hash = hashlib.sha256(plain_password.encode('utf-8')).hexdigest().encode('utf-8')
+    return bcrypt.checkpw(sha256_hash, hashed_password.encode('utf-8'))
 
 def create_access_token(data: dict):
     to_encode = data.copy()
