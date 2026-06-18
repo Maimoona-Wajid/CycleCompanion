@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text
 from sqlalchemy.orm import sessionmaker, Session, relationship
@@ -1296,11 +1298,24 @@ async def train_ml_models(current_user: User = Depends(get_current_user), db: Se
     return {"status": "success", "logs": training_steps}
 
 # ==========================================
-# 15. ROOT AND HEALTH CHECKS
+# 15. ROOT, HEALTH CHECKS & FRONTEND SERVING
 # ==========================================
 
-@app.get("/")
-async def root():
+# Resolve the static directory path
+STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+
+@app.get("/", response_class=FileResponse)
+async def serve_login():
+    """Serve the login/register page"""
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"), media_type="text/html")
+
+@app.get("/dashboard", response_class=FileResponse)
+async def serve_dashboard():
+    """Serve the main dashboard page"""
+    return FileResponse(os.path.join(STATIC_DIR, "dashboard.html"), media_type="text/html")
+
+@app.get("/api/status")
+async def api_status():
     return {
         "application": "CycleCompanion Core API Service",
         "version": "2.0.0",
@@ -1313,8 +1328,8 @@ async def root():
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
 
-# Set fallback secret key expiration variable if missing
-ACCESS_TOKEN_EXPIRE_MINUTES = 600
+# Mount static files for any additional assets (CSS, JS, images)
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 if __name__ == "__main__":
     import uvicorn

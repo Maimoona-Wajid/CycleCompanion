@@ -10,21 +10,28 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #6B8E7F;
-            --primary-light: #8DA399;
-            --primary-dark: #4A6357;
-            --rose: #F5E6E8;
-            --rose-dark: #D3B9BC;
-            --rose-light: #FFF5F7;
-            --bg-gradient: linear-gradient(135deg, #F9F6F7 0%, #E3EBE7 100%);
+            --primary: #B8A9C9;
+            --primary-light: #D4C8E2;
+            --primary-dark: #8E7BAF;
+            --rose: #FDE8E8;
+            --rose-dark: #E8B4B8;
+            --rose-light: #FFF0F3;
+            --bg-gradient: linear-gradient(135deg, #FBF7FC 0%, #F0E6F6 50%, #FFF0F3 100%);
             --glass-bg: rgba(255, 255, 255, 0.75);
             --glass-border: rgba(255, 255, 255, 0.5);
-            --card-shadow: 0 8px 32px 0 rgba(107, 142, 127, 0.08);
+            --card-shadow: 0 8px 32px 0 rgba(184, 169, 201, 0.12);
             --text-main: #2C3E50;
             --text-muted: #7F8C8D;
-            --success: #2ECC71;
-            --danger: #EC5B5B;
-            --warning: #F1C40F;
+            --success: #81C995;
+            --danger: #E88B8B;
+            --warning: #F0D27A;
+        }
+
+        .hidden { display: none !important; }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         * {
@@ -85,14 +92,14 @@
         }
 
         .nav-tab:hover {
-            background: rgba(107, 142, 127, 0.08);
+            background: rgba(184, 169, 201, 0.08);
             color: var(--primary);
         }
 
         .nav-tab.active {
             background: var(--primary);
             color: white;
-            box-shadow: 0 4px 12px rgba(107, 142, 127, 0.2);
+            box-shadow: 0 4px 12px rgba(184, 169, 201, 0.2);
         }
 
         .user-action-box {
@@ -143,9 +150,9 @@
         }
 
         .logout-btn:hover {
-            background: #FADBD8;
-            color: #C0392B;
-            border-color: #F5B7B1;
+            background: #FDE8E8;
+            color: #C97272;
+            border-color: #F4C7C7;
         }
 
         /* MAIN LAYOUT CONTAINER */
@@ -183,7 +190,7 @@
         }
 
         .seed-demo-btn {
-            background: linear-gradient(135deg, #F39C12 0%, #D35400 100%);
+            background: linear-gradient(135deg, #D4A9E0 0%, #B8A9C9 100%);
             color: white;
             border: none;
             padding: 12px 20px;
@@ -191,14 +198,14 @@
             font-weight: 700;
             font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.2);
+            box-shadow: 0 4px 15px rgba(212, 169, 224, 0.2);
             transition: all 0.3s ease;
             z-index: 10;
         }
 
         .seed-demo-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.35);
+            box-shadow: 0 6px 20px rgba(212, 169, 224, 0.35);
         }
 
         /* CARD AND MODULE STYLING */
@@ -228,7 +235,7 @@
 
         .card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(107, 142, 127, 0.12);
+            box-shadow: 0 12px 40px rgba(184, 169, 201, 0.12);
         }
 
         .card-header {
@@ -327,8 +334,8 @@
         .ml-assurance {
             font-size: 12px;
             font-weight: 700;
-            color: #27AE60;
-            background: #E8F8F5;
+            color: #81C995;
+            background: #EDF7F0;
             padding: 4px 10px;
             border-radius: 12px;
             display: inline-block;
@@ -526,7 +533,7 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(107, 142, 127, 0.25);
+            box-shadow: 0 4px 15px rgba(184, 169, 201, 0.25);
             width: 100%;
         }
 
@@ -595,9 +602,9 @@
             letter-spacing: 0.5px;
         }
 
-        .comp-high { background: #FADBD8; color: #C0392B; }
-        .comp-medium { background: #FCF3CF; color: #B7950B; }
-        .comp-low { background: #D4EFDF; color: #1E8449; }
+        .comp-high { background: #FDE8E8; color: #C97272; }
+        .comp-medium { background: #FFF4E0; color: #C9A84C; }
+        .comp-low { background: #E0F0E9; color: #6BAF8D; }
 
         .align-status-badge {
             font-size: 11px;
@@ -657,7 +664,7 @@
         .completed-timestamp {
             font-size: 12px;
             font-style: italic;
-            color: #27AE60;
+            color: #81C995;
             font-weight: 600;
         }
 
@@ -682,7 +689,7 @@
             border-radius: 12px;
             padding: 16px;
             font-family: 'Courier New', Courier, monospace;
-            color: #2ECC71;
+            color: #B8A9C9;
             font-size: 13px;
             min-height: 220px;
             max-height: 280px;
@@ -773,9 +780,9 @@
             border-radius: 6px;
         }
 
-        .forecast-badge-High { color: #EC5B5B; }
-        .forecast-badge-Moderate { color: #F1C40F; }
-        .forecast-badge-Low { color: #2ECC71; }
+        .forecast-badge-High { color: #E88B8B; }
+        .forecast-badge-Moderate { color: #F0D27A; }
+        .forecast-badge-Low { color: #81C995; }
     </style>
 </head>
 <body>
@@ -893,7 +900,7 @@
                         <div>
                             <p style="font-size: 14px; font-weight: 600; margin-bottom: 6px;">Logged Mood Vector (1-10)</p>
                             <div style="width: 100%; background: #EAEDED; height: 10px; border-radius: 5px; overflow: hidden;">
-                                <div style="background: #F1C40F; height: 100%; width: 50%;" id="mood-progress"></div>
+                                <div style="background: #F0D27A; height: 100%; width: 50%;" id="mood-progress"></div>
                             </div>
                         </div>
                         <div style="background: #FAFBFC; padding: 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; border: 1px solid #ECF0F1;">
@@ -1108,7 +1115,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title"><span class="card-icon">🧠</span>Q-Learning Reinforcement Scheduler</h2>
-                        <span style="font-size: 11px; font-weight: 700; color: #27AE60; background: #E8F8F5; padding: 4px 8px; border-radius: 8px;">Active RL Engine</span>
+                        <span style="font-size: 11px; font-weight: 700; color: #81C995; background: #EDF7F0; padding: 4px 8px; border-radius: 8px;">Active RL Engine</span>
                     </div>
                     <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
                         The model evaluates task difficulty and scheduled phase weights (Q-matrix). Tasks with **Optimal Peak Alignment** are boosted to the top of your list! Completing tasks modifies your personalized weights.
@@ -1276,7 +1283,7 @@
     </div>
 
     <script>
-        const API_BASE = "http://localhost:8081";
+        const API_BASE = "";
         let activeTab = "overview";
         let symptomChartObj = null;
         let perfChartObj = null;
@@ -1285,7 +1292,7 @@
         window.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('authToken');
             if (!token) {
-                window.location.href = 'index.html';
+                window.location.href = '/';
                 return;
             }
 
@@ -1658,10 +1665,10 @@
                         data: {
                             labels: ["Menstrual", "Follicular", "Ovulatory", "Luteal"],
                             datasets: [
-                                { label: 'Cramps', data: crampsData, backgroundColor: '#EC7063' },
-                                { label: 'Fatigue', data: fatigueData, backgroundColor: '#5DADE2' },
-                                { label: 'Bloating', data: bloatingData, backgroundColor: '#F4D03F' },
-                                { label: 'Headache', data: headacheData, backgroundColor: '#AF7AC5' }
+                                { label: 'Cramps', data: crampsData, backgroundColor: '#E8A0A0' },
+                                { label: 'Fatigue', data: fatigueData, backgroundColor: '#9DC8E8' },
+                                { label: 'Bloating', data: bloatingData, backgroundColor: '#F0D27A' },
+                                { label: 'Headache', data: headacheData, backgroundColor: '#C9A8D8' }
                             ]
                         },
                         options: {
@@ -1689,7 +1696,7 @@
                                 {
                                     label: 'Average Energy Level (1-10)',
                                     data: energyAverages,
-                                    borderColor: '#E67E22',
+                                    borderColor: '#E8B88A',
                                     backgroundColor: 'transparent',
                                     tension: 0.35,
                                     borderWidth: 3,
@@ -1698,7 +1705,7 @@
                                 {
                                     label: 'Average Productivity Level (1-10)',
                                     data: prodAverages,
-                                    borderColor: '#1ABC9C',
+                                    borderColor: '#8EC8BE',
                                     backgroundColor: 'transparent',
                                     tension: 0.35,
                                     borderWidth: 3,
@@ -1740,7 +1747,7 @@
                                     <p style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">${model.type}</p>
                                 </div>
                                 <div style="text-align:right;">
-                                    <span style="font-size:12px; font-weight:700; color:#27AE60; background:#E8F8F5; padding:4px 8px; border-radius:8px;">${model.accuracy}</span>
+                                    <span style="font-size:12px; font-weight:700; color:#81C995; background:#EDF7F0; padding:4px 8px; border-radius:8px;">${model.accuracy}</span>
                                     <p style="font-size:10px; color:var(--text-muted); font-weight:500; margin-top:4px;">Status: ${model.status}</p>
                                 </div>
                             </div>
@@ -1776,7 +1783,7 @@
             const consoleBox = document.getElementById('terminal-console');
             consoleBox.innerHTML = '';
 
-            addConsoleLine("Connecting to ML Training Core on port 8081...", "#F1C40F");
+            addConsoleLine("Connecting to ML Training Core...", "#F0D27A");
 
             try {
                 const res = await fetch(`${API_BASE}/api/ml/train`, {
@@ -1791,7 +1798,7 @@
                     function typeNextLine() {
                         if (idx < data.logs.length) {
                             const isSuccess = data.logs[idx].startsWith('✓');
-                            const color = isSuccess ? '#2ECC71' : '#AEB6BF';
+                            const color = isSuccess ? '#81C995' : '#AEB6BF';
                             addConsoleLine(data.logs[idx], color);
                             idx++;
                             setTimeout(typeNextLine, 350);
@@ -1802,7 +1809,7 @@
                     setTimeout(typeNextLine, 400);
                 }
             } catch (err) {
-                addConsoleLine("ERROR: Connection with core training thread failed.", "#EC5B5B");
+                addConsoleLine("ERROR: Connection with core training thread failed.", "#E88B8B");
             }
         }
 
@@ -1820,7 +1827,7 @@
 
         function triggerLogout() {
             localStorage.clear();
-            window.location.href = 'index.html';
+            window.location.href = '/';
         }
     </script>
 </body>
