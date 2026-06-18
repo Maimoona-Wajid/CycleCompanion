@@ -62,7 +62,7 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY", "cyclecompanion-super-secret-key-2026")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 600
 
-pwd_context = CryptContext(schemes=["bcrypt", "argon2"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 # ==========================================
@@ -821,7 +821,10 @@ class QLearningScheduler:
 
 @app.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.email == user_data.email).first()
+    try:
+        db_user = db.query(User).filter(User.email == user_data.email).first()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database connection error: {str(e)}")
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
